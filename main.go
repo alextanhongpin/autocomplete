@@ -28,6 +28,7 @@ type Word struct {
 }
 type AutocompleteResponse struct {
 	Data []Word `json:"data"`
+	Type string `json:"type"`
 }
 type Searcher struct {
 	completer *typeahead.TrieNode
@@ -49,8 +50,10 @@ func main() {
 	router.GET("/v1/autocomplete", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		q := r.URL.Query().Get("query")
 		words := searcher.completer.Search(q)
+		resultType := "completer"
 		if len(words) == 0 {
 			words = searcher.correcter.Search(q, DistanceThreshold)
+			resultType = "corrector"
 		}
 		result := make([]Word, len(words))
 		for i, word := range words {
@@ -69,7 +72,11 @@ func main() {
 		if n > 10 {
 			n = 10
 		}
-		json.NewEncoder(w).Encode(AutocompleteResponse{Data: result[:n]})
+		fmt.Println(result[:n], resultType)
+		json.NewEncoder(w).Encode(AutocompleteResponse{
+			Data: result[:n],
+			Type: resultType,
+		})
 	})
 
 	// This will only serve static files. The template will still need to
