@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -38,8 +39,13 @@ func main() {
 
 	// wordLen := 32
 	// damerauLevenshtein := stringdist.NewDamerauLevenshtein(wordLen)
+	t := template.Must(template.ParseFiles("templates/index.html"))
 
 	router := httprouter.New()
+	router.GET("/", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		t.Execute(w, nil)
+	})
+
 	router.GET("/v1/autocomplete", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		q := r.URL.Query().Get("query")
 		words := searcher.completer.Search(q)
@@ -65,6 +71,11 @@ func main() {
 		}
 		json.NewEncoder(w).Encode(AutocompleteResponse{Data: result[:n]})
 	})
+
+	// This will only serve static files. The template will still need to
+	// be rendered somewhere else.
+	router.ServeFiles("/public/*filepath", http.Dir("public"))
+
 	addr := ":8080"
 	srv := &http.Server{
 		Addr:         addr,
