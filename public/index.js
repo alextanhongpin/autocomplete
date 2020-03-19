@@ -1,4 +1,4 @@
-(function () {
+;(function () {
   const template = document.createElement('template')
   template.innerHTML = `
     <style>
@@ -77,6 +77,8 @@
         height: 1.5em;
         border-radius: 0 2px 2px 0;
         border: 1px solid #aaa;
+        width: 30px;
+        text-align: center;
       }
 
       .grid .result-row {
@@ -102,7 +104,8 @@
 
     </style>
     <div>
-      <label id='label'>Label</label>
+      <label id='label'>Search</label>
+
       <div class='combobox-wrapper'
         aria-expanded="false"
         aria-owns='listbox'
@@ -117,13 +120,12 @@
           id='combobox-arrow'
           tabindex='-1'
           role='button'
-          aria-label='Show options'>arr_down_img</div>
+          aria-label='Show options'>▾</div>
       <ul aria-labelledby='label'
         role='listbox'
         id='listbox'
         class='listbox hidden'></ul>
       </div>
-    
     </div>
   `
 
@@ -135,26 +137,32 @@
       }
       return _private.get(self)
     }
+
     class ComboboxList extends HTMLElement {
       constructor () {
         super()
-        this.attachShadow({ mode: 'open' }).appendChild(template.content.cloneNode(true))
+        this.attachShadow({ mode: 'open' }).appendChild(
+          template.content.cloneNode(true)
+        )
         internal(this).activeIndex = -1
         internal(this).resultsCount = 0
         internal(this).shown = false
         internal(this).hasInlineAutocomplete = true
         internal(this).shouldAutoSelect = true
       }
+
       connectedCallback () {
         internal(this).$combobox = this.shadowRoot.getElementById('combobox')
         internal(this).$input = this.shadowRoot.getElementById('input')
         internal(this).$listbox = this.shadowRoot.getElementById('listbox')
         internal(this).$arrow = this.shadowRoot.getElementById('combobox-arrow')
-        internal(this).hasInlineAutocomplete = internal(this).$input.getAttribute('aria-autocomplete') === 'both'
+        internal(this).hasInlineAutocomplete =
+          internal(this).$input.getAttribute('aria-autocomplete') === 'both'
         this.bindEvents()
       }
+
       bindEvents () {
-        let {$input, $listbox, $arrow} = internal(this)
+        let { $input, $listbox, $arrow } = internal(this)
         document.body.addEventListener('click', this.checkHide.bind(this))
         $input.addEventListener('keyup', this.checkKey.bind(this))
         $input.addEventListener('keydown', this.setActiveItem.bind(this))
@@ -195,7 +203,7 @@
           }
         }
       }
-      updateResults(shouldShowAll) {
+      updateResults (shouldShowAll) {
         if (internal(this).timeout) {
           window.clearTimeout(internal(this).timeout)
         }
@@ -205,11 +213,7 @@
       }
       async _updateResults (shouldShowAll) {
         const searchString = internal(this).$input.value
-        let {
-          $listbox,
-          $combobox,
-          shouldAutoSelect
-        } = internal(this) 
+        let { $listbox, $combobox, shouldAutoSelect } = internal(this)
         let { data, type } = await fetchSuggestions(searchString)
         console.log(data)
         internal(this).hasInlineAutocomplete = type === 'completer'
@@ -251,7 +255,7 @@
           activeIndex,
           resultsCount,
           hasInlineAutocomplete
-        } = internal(this) 
+        } = internal(this)
 
         // Esc
         if (key === 27) {
@@ -309,7 +313,10 @@
           prevActive.setAttribute('aria-selected', 'false')
         }
         if (activeItem) {
-          $input.setAttribute('aria-activedescendant', `result-item-${activeIndex}`)
+          $input.setAttribute(
+            'aria-activedescendant',
+            `result-item-${activeIndex}`
+          )
           activeItem.classList.add('focused')
           activeItem.setAttribute('aria-selected', 'true')
           if (hasInlineAutocomplete) {
@@ -337,7 +344,10 @@
         this.updateResults(false)
       }
       checkHide (evt) {
-        if (evt.target === internal(this).$input || internal(this).$combobox.contains(evt.target)) {
+        if (
+          evt.target === internal(this).$input ||
+          internal(this).$combobox.contains(evt.target)
+        ) {
           return
         }
         this.hideListbox()
@@ -347,20 +357,15 @@
         internal(this).activeIndex = -1
         internal(this).resultsCount = 0
 
-        const {
-          $listbox,
-          $combobox,
-          $input
-        } = internal(this)
+        const { $listbox, $combobox, $input } = internal(this)
 
         $listbox.innerHTML = ''
         $listbox.classList.add('hidden')
         $combobox.setAttribute('aria-expanded', 'false')
-        $input.setAttribute('aria-activedescendant', ''),
-        this.onHide()
+        $input.setAttribute('aria-activedescendant', ''), this.onHide()
       }
       checkSelection () {
-        const {activeIndex} = internal(this)
+        const { activeIndex } = internal(this)
         if (activeIndex < 0) {
           return
         }
@@ -368,10 +373,7 @@
         this.selectItem(activeItem)
       }
       autocompleteItem () {
-        let {
-          $input,
-          $listbox
-        } = internal(this)
+        let { $input, $listbox } = internal(this)
         const autocompletedItem = $listbox.querySelector('.focused')
         const inputText = $input.value
 
@@ -398,7 +400,9 @@
   window.customElements.define('combobox-list', ComboboxList)
 
   async function fetchSuggestions (query) {
-    const response = await window.fetch(`http://localhost:8080/v1/autocomplete?query=${query}`)
+    const response = await window.fetch(
+      `http://localhost:8080/v1/autocomplete?query=${query}`
+    )
 
     if (!response.ok) {
       const msg = await response.text()

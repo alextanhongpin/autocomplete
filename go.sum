@@ -1,0 +1,6 @@
+github.com/alextanhongpin/stringdist v0.0.1 h1:5Bygn3NKAoiUld8oYtoS8YplILTjOWxKe7FPAfXXs+U=
+github.com/alextanhongpin/stringdist v0.0.1/go.mod h1:6Bb1jYZG8v0tBZjFmU6/48W60Gt/aN6rRs2dXDBliq0=
+github.com/alextanhongpin/typeahead v0.0.0-20181110181822-b7c560b77935 h1:TQ13ySzYpDl1rGD+0FD5NgqqBKP4AoBlsR3jeeuH2u0=
+github.com/alextanhongpin/typeahead v0.0.0-20181110181822-b7c560b77935/go.mod h1:mgTwflOKB2u/DFaJMSeoVSxVw1rzcm6yODrgpPSWUbI=
+github.com/julienschmidt/httprouter v1.3.0 h1:U0609e9tgbseu3rBINet9P48AI/D3oJs4dN7jwJOQ1U=
+github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
